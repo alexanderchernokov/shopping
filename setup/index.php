@@ -23,8 +23,7 @@ echo  generateRandomString();
     <div class="wrapper">
         <div class="content">
             <?php
-            //$config_content = file_get_contents('../db/config.php');
-            $config_content = '';
+            $config_content = file_get_contents('../db/config.php');
             if($config_content != ''){
                 echo $config_content;
             }
