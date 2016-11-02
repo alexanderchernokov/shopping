@@ -6,6 +6,12 @@ body{
     width:100%;
     font-family: Arial;
     color:#333333;
+    font-size: 12px;
+}
+.clear_fix{
+    content:' ';
+    display:table;
+    clear: both;
 }
 .container{
     width: 100%;
@@ -34,14 +40,30 @@ h1,h2{
     padding: 10px;
     border-bottom: 1px solid #dddddd;
 }
+
 .form_group label{
     display: block;
     padding: 5px;
 }
 .form_group input{
     display: block;
-    padding: 5px;
+    padding: 9px;
     border:1px solid #dddddd;
     border-radius: 3px;
     color:#666666;
+    font-size: 14px;
+}
+.form_group.check label,.form_group.check input{
+    display: inline-block;
+    margin-left: 15px;
+}
+.success,.failed{
+    font-size: 12px;
+    padding: 5px;
+}
+.success{
+    color:green;
+}
+.failed{
+    color:red;
 }

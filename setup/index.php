@@ -23,7 +23,8 @@ echo  generateRandomString();
     <div class="wrapper">
         <div class="content">
             <?php
-            $config_content = file_get_contents('../db/config.php');
+            //$config_content = file_get_contents('../db/config.php');
+            $config_content = '';
             if($config_content != ''){
                 echo $config_content;
             }
@@ -33,30 +34,31 @@ echo  generateRandomString();
                         <form id="db_form">
                             <div class="form_group">
                                 <label>Host</label>
-                                <input type="text" name="host" id="host" value="localhost">
+                                <input type="text" name="host" id="host" value="localhost" required>
                             </div>
                             <div class="form_group">
-                                <label>DB name</label>
-                                <input type="text" name="db_name" id="db_name">
+                                <label>Database name</label>
+                                <input type="text" name="db_name" id="db_name" required>
                             </div>
                             <div class="form_group">
-                                <label>DB user</label>
-                                <input type="text" name="db_user" id="db_user">
+                                <label>Database user</label>
+                                <input type="text" name="db_user" id="db_user" required>
                             </div>
                             <div class="form_group">
-                                <label>DB password</label>
-                                <input type="text" name="db_password" id="db_password">
+                                <label>Database password</label>
+                                <input type="text" name="db_password" id="db_password" required>
                             </div>
                             <div class="form_group">
-                                <label>DB-preffix</label>
-                                <input type="text" name="db_prefix" id="db_prefix" disabled value="'.generateRandomString().'_">
+                                <label>Database preffix</label>
+                                <input type="text" name="db_prefix" id="db_prefix" value="'.generateRandomString().'_" required>
                             </div>
-                            <div class="form_group">
-                                <label>Insert default values for categories, types and products?</label>
+                            <div class="form_group check clear_fix">
                                 <input type="checkbox" name="insert_values" id="insert_values" value="1" checked>
+                                <label>Insert default values for categories, types and products?</label>
                             </div>
+                            
                             <div class="form_group">
-                                
+                                <div id="results"></div>    
                                 <input type="submit" class="db_submit" value="Start Instalation">
                             </div>
                         </form>
