@@ -1,1 +1,0 @@
-<?php define("PRGM_TABLE_PREFIX", "vmj_"); $database = array(); $database["server_name"]  = "localhost"; $database["name"]  = "shopping"; $database["username"]  = "root1"; $database["password"]  = "optionsweb1!"; ?>
