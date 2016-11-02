@@ -1,0 +1,47 @@
+*{
+    margin: 0px;
+    padding: 0px;
+}
+body{
+    width:100%;
+    font-family: Arial;
+    color:#333333;
+}
+.container{
+    width: 100%;
+    position: absolute;
+    left: 0px;
+    top:0px;
+    background-color: #efefef;
+}
+.wrapper{
+    width: 960px;
+    padding: 50px 20px;
+    position: relative;
+    margin: 0px auto;
+    background-color: #ffffff;
+    border-left: 1px solid #dddddd;
+    border-right: 1px solid #dddddd;
+}
+.content{
+    width: 600px;
+    margin: 0px auto;
+}
+h1,h2{
+    padding: 10px 0px;
+}
+.form_group{
+    padding: 10px;
+    border-bottom: 1px solid #dddddd;
+}
+.form_group label{
+    display: block;
+    padding: 5px;
+}
+.form_group input{
+    display: block;
+    padding: 5px;
+    border:1px solid #dddddd;
+    border-radius: 3px;
+    color:#666666;
+}
