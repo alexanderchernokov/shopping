@@ -23,9 +23,11 @@ echo  generateRandomString();
     <div class="wrapper">
         <div class="content">
             <?php
-            $config_content = file_get_contents('../db/config.php');
-            if($config_content != ''){
-                echo $config_content;
+            if(file_exists('../db/config.php')){
+                echo '
+                    The system has been installed before.<br>
+                    For new installation please remove "config" file.
+                ';
             }
             else{
                 echo   '<h1>Installation progress</h1>

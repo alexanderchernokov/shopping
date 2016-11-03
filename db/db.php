@@ -79,7 +79,6 @@ class DB
         return false;
     }
 
-    //SD322: now uses database name as array-key to support storage for multiple DB's
     function set_table_names($IsSubdreamer=true)
     {
         if($this->queryid = mysql_query("SHOW TABLES FROM `" . $this->database . '`'))
@@ -92,13 +91,11 @@ class DB
         }
     }
 
-    //SD343
     function db_version()
     {
         return preg_replace('/[^0-9.].*/', '', @mysql_get_server_info($this->conn));
     }
 
-    //SD322: check if table with given name exists
     function table_exists($tablename='')
     {
         if(empty($tablename)) return false;
@@ -171,7 +168,6 @@ class DB
             case '%d':
                 return (int) array_shift($args);
             case '%s':
-                /* Could do mysql_real_escape_string here but it's already been done in SD */
                 return (string)array_shift($args);
             case '%%':
                 return '%';
@@ -199,7 +195,6 @@ class DB
     {
         // Array ( [0] => {mainsettings} [1] => mainsettings )
         $table_name = $matches[1];
-        //SD322: added checks to not change pagebreak and serialize'd results
         if(($table_name != 'pagebreak') && (substr($table_name,0,2) != 'a:') &&
             isset($this->table_names_arr[$this->database]) &&
             @in_array($table_name, $this->table_names_arr[$this->database]))
@@ -220,16 +215,10 @@ class DB
         $args = func_get_args();
         array_shift($args);
 
-        //SD344: if "skip_curly" is true, then do not process query for
-        // curly bracket replacements; e.g. used when storing
-        // Smarty templates in table
         if(empty($this->skip_curly))
         {
             $new_query_string = preg_replace_callback("#{([^}|pagebreak|\s]*\w+[^{|pagebreak|\s]*)}#i", array($this, 'prefix_table_name'), $query_string);
 
-            //SD322: do not replace {pagebreak} in statement
-            // prefix not added, this can happen for queries like these:
-            // DROP TABLE IF EXISTS, CREATE TABLE IF NOT EXISTS etc
             if($new_query_string == $query_string)
             {
                 $new_query_string = preg_replace("#{([^}|pagebreak|\s]*\w+[^{|pagebreak|\s]*)}#i", PRGM_TABLE_PREFIX . "$1", $query_string);
@@ -267,9 +256,6 @@ class DB
 
         $new_query_string = preg_replace_callback("#{([^}|pagebreak|\s]*\w+[^{|pagebreak|\s]*)}#i", array($this, 'prefix_table_name'), $query_string);
 
-        //SD322: do not replace {pagebreak} in statement
-        // prefix not added, this can happen for queries like these:
-        // DROP TABLE IF EXISTS, CREATE TABLE IF NOT EXISTS etc
         if($new_query_string == $query_string)
         {
             $new_query_string = preg_replace("#{([^}|pagebreak|\s]*\w+[^{|pagebreak|\s]*)}#i", PRGM_TABLE_PREFIX . "$1", $query_string);
@@ -408,7 +394,7 @@ class DB
     }
 
     // ###################### found rows ########################
-    function found_rows() //SD351
+    function found_rows()
     {
         # ONLY after SELECT like this: SELECT SQL_CALC_FOUND_ROWS ID ...
         if($this->conn && ($getrows = @mysql_query('SELECT FOUND_ROWS()')))
@@ -516,73 +502,8 @@ class DB
     // ###################### error message #######################
     private function error($msg)
     {
-        /*
-          global $userinfo, $sdlanguage;
 
-          $this->skip_curly = false; //SD343: reset flag for normal ops
-          $this->errdesc = @mysql_error();
-          $this->errno   = @mysql_errno();
-
-          if($this->ignore_error) return;
-
-          // not defined during install
-          if(!defined('EMAIL_CRLF'))
-          {
-            define('EMAIL_CRLF', "\n");
-          }
-
-          $db_err_message  = PRGM_NAME . " Database Error:" . EMAIL_CRLF . EMAIL_CRLF;
-          $db_err_message .= $msg . " " . EMAIL_CRLF . EMAIL_CRLF;
-          $db_err_message .= "MySQL Error Description: " . $this->errdesc . " " . EMAIL_CRLF;
-          $db_err_message .= "MySQL Error Number: " . $this->errno." " . EMAIL_CRLF;
-          $db_err_message .= "Date: " . @gmdate("l jS \of F Y h:i:s A") . EMAIL_CRLF; // SD313x changed date format
-          $db_err_message .= "File: http://" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . EMAIL_CRLF;
-          //SD343: added USERIP
-          if(defined('USERIP')) $db_err_message .= 'User IP: '.USERIP;
-
-          //SD360: display SQL error during install/upgrade and continue
-          if(defined('INSTALLING_PRGM') ||
-             (defined('UPGRADING_PRGM') && !empty($userinfo['adminaccess'])))
-          {
-            echo '<pre>SQL Error: '.htmlspecialchars($db_err_message).'</pre><br />';
-            return;
-          }
-           */
-        //SD360: do not send emails for installs/upgrades
-        /*if(defined('TECHNICAL_EMAIL') && !defined('INSTALLING_PRGM') && !defined('INSTALLING_PRGM'))
-        {
-          SendEmail(TECHNICAL_EMAIL, PRGM_NAME . ' Database Error', $db_err_message);
-        }
-
-        if(!empty($userinfo['adminaccess']) && (defined('DEBUG') ||
-           !defined('TECHNICAL_EMAIL') || !strlen(TECHNICAL_EMAIL)))
-        {
-          echo '
-          <<br /><form>
-          <textarea style="width: 100%; height: 15em; border: 2px solid #ff0000; padding: 5px;" wrap="off">
-          ' . htmlspecialchars($db_err_message) . '
-          </textarea>
-          </form><br />';
-        }
-        else
-        {
-          if(function_exists('DisplayDate'))
-          {
-            $dd = DisplayDate(time(),'Y-m-d H:i');
-          }
-          else
-          {
-            $dd = date('Y-m-d H:i',time());
-          }
-          $msg = isset($sdlanguage['mysql_error_message']) ? $sdlanguage['mysql_error_message'] :
-                       '<p style="font-size: 15px; border: 1px solid red; padding: 10px;">We are sorry, a database error has occurred and pageload stopped, an admin has been notified.</p>';
-          if(function_exists('DisplayMessage'))
-            DisplayMessage($msg.'<br />'.$dd, true, 'Database Error');
-          else
-            echo $msg.'<br />'.$dd, true, 'Database Error';
-        }
-
-        exit(); */
+          echo 'Somehting Wrong';
     }
 
     // ############### switch mysql to use specific collation ###################
@@ -621,12 +542,11 @@ class DB
             $charset_tmp = str_replace(array_keys($charsets), array_values($charsets), $charset_tmp);
 
             $collate = '';
-            if(($charset == 'utf-8') || ($charset == 'utf8')) // SD313x - also "utf8"
+            if(($charset == 'utf-8') || ($charset == 'utf8')) //
             {
                 $collate = " COLLATE 'utf8_unicode_ci'";
             }
 
-            //SD342 check PHP version
             if(version_compare(PHP_VERSION, '5.2.3', 'ge'))
             {
                 return @mysql_set_charset($charset,$this->conn);
@@ -656,7 +576,6 @@ class DB
     }
 
 
-    // SD313: check if a given table's column is contained in *any* index
     // for the given table; this shorter version is slightly faster than below.
     function index_for_column_exists($tablename, $columnname)
     {
@@ -671,7 +590,6 @@ class DB
     } //index_for_column_exists
 
 
-    // SD342: check if a given table's index name already exists
     function index_exists($tablename, $indexname)
     {
         if(empty($tablename) || empty($indexname)) return false;
@@ -685,7 +603,6 @@ class DB
     } //index_exists
 
 
-    // SD360: drop a index on specified table (if it exists)
     function drop_index($tablename, $indexname)
     {
         if(empty($tablename) || empty($indexname)) return false;
@@ -702,8 +619,8 @@ class DB
     // This function returns TRUE if the specified column "$columnname" is either
     // part of any index OR optionally of a specified index "$indexname" for
     // table "$tablename", otherwise it returns FALSE.
-    // "$tablename" HAS to be the full name, i.e. including the SD prefix if it
-    // is a SD-table!
+    // "$tablename" HAS to be the full name, i.e. including the  prefix if it
+    // is a table!
     function columnindex_exists($tablename,$columnname,$indexname='')
         // $indexname is optional and could be used in case of compound keys
     {
@@ -735,7 +652,7 @@ class DB
     } //columnindex_exists
 
 
-    // SD313: adds either a un-/named index on a table for a given column
+    // adds either a un-/named index on a table for a given column
     // if it does not exist yet
     function add_tableindex($tablename, $columnname, $indexname='', $asc = true, $length=false)
     {
@@ -773,7 +690,7 @@ class DB
     } //add_tableindex
 
 
-    // SD313: adds a named column to given table if *not exists* and MUST pass
+    // adds a named column to given table if *not exists* and MUST pass
     //        the column type (incl.length!) and optionally further specifics
     //        like "NOT NULL" and "DEFAULT xxx" parameters in "$nullable".
     // NOTE: tablename MUST be the FULL name incl. table prefix (no "{ }")

@@ -121,7 +121,7 @@ if($_POST['insert_values'] == 1){
         if($DB->query("INSERT INTO `".PRGM_TABLE_PREFIX."types`
             (`type_name`)
         VALUES
-        ('Table'),
+            ('Table'),
             ('Chair'),
             ('Bathroom'),
             ('Stove'),
@@ -139,6 +139,76 @@ if($_POST['insert_values'] == 1){
             $msg .= '<div class="failed">The "<b>types</b>" creating is failed</div>';
             $error = 1;
         }
+
+        if($DB->query("INSERT INTO `".PRGM_TABLE_PREFIX."product` 
+                            (`product_id`, `product_name`, `product_price`) 
+                       VALUES 
+                            (NULL, 'Dining Table', '450'), 
+                            (NULL, 'Dining Chair', '50'), 
+                            (NULL, 'Shawer Head', '20'), 
+                            (NULL, 'AEG Stove', '320'), 
+                            (NULL, 'Fork', '5.50'), 
+                            (NULL, 'Cup', '7.80'), 
+                            (NULL, 'Gray Sofa', '2500'), 
+                            (NULL, 'Towel', '12'), 
+                            (NULL, 'Pillow', '35'), 
+                            (NULL, 'Pillow Case', '11.30')
+                       ;"
+        )
+        ){
+            $msg .= '<div class="success">The "<b>products </b>" has been created successfully</div>';
+        }
+        else{
+            $msg .= '<div class="failed">The "<b>products</b>" creating is failed</div>';
+            $error = 1;
+        }
+
+        if($DB->query("INSERT INTO `".PRGM_TABLE_PREFIX."categories_products` 
+                            (`product_id`, `category_id`) 
+                       VALUES 
+                            ('1', '1'), 
+                            ('2', '6'), 
+                            ('3', '9'), 
+                            ('4', '2'), 
+                            ('5', '7'), 
+                            ('6', '7'), 
+                            ('7', '2'), 
+                            ('8', '3'), 
+                            ('9', '4'), 
+                            ('10', '4')
+                       ;"
+        )
+        ){
+            $msg .= '<div class="success">The "<b>categories products relation</b>" has been created successfully</div>';
+        }
+        else{
+            $msg .= '<div class="failed">The "<b>categories products relation</b>" creating is failed</div>';
+            $error = 1;
+        }
+
+    if($DB->query("INSERT INTO `".PRGM_TABLE_PREFIX."types_products` 
+                        (`product_id`, `type_id`) 
+                   VALUES 
+                        ('1', '1'), 
+                        ('2', '2'), 
+                        ('3', '7'), 
+                        ('4', '4'), 
+                        ('5', '5'), 
+                        ('6', '6'), 
+                        ('7', '9'), 
+                        ('8', '3'), 
+                        ('9', '10'), 
+                        ('10', '10')
+                       ;"
+    )
+    ){
+        $msg .= '<div class="success">The "<b>types products relation</b>" has been created successfully</div>';
+    }
+    else{
+        $msg .= '<div class="failed">The "<b>types products relation</b>" creating is failed</div>';
+        $error = 1;
+    }
+
 }
 if($error == 0){
     $msg .= '<div>Instalation finished.Please <a href="../">GO TO THE SITE</a></div>';
