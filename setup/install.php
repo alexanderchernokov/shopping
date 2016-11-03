@@ -211,7 +211,7 @@ if($_POST['insert_values'] == 1){
 
 }
 if($error == 0){
-    $msg .= '<div>Instalation finished.Please <a href="../">GO TO THE SITE</a></div>';
+    $msg .= '<div>Instalation finished.Please <a href="../" class="go">GO TO THE SITE</a></div>';
 }
 
 echo $msg;

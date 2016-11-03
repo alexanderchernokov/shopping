@@ -123,3 +123,11 @@ table tr th{
     padding: 5px 7px;
     background-color: #efefef;
 }
+.go{
+    display: inline-block;
+    padding: 10px 5px;
+    font-size: 14px;
+    color: #ffffff;
+    background-color: cornflowerblue;
+    border-radius: 5px;
+}
